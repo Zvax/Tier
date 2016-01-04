@@ -229,7 +229,7 @@ function createHtmlBody(JigBase $template)
     return new HtmlBody($text);
 }
 
-function tierExceptionHandler(\Exception $ex)
+function tierExceptionHandler($ex)
 {
     //TODO - need to ob_end_clean as many times as required because
     //otherwise partial content gets sent to the client.
@@ -241,7 +241,24 @@ function tierExceptionHandler(\Exception $ex)
         //Exception after headers sent
     }
 
-    echo getExceptionString($ex);
+    if ($ex instanceof \Exception)
+    {
+        echo getExceptionString($ex);
+    }
+    else if ($ex instanceof \Error)
+    {
+        echo getErrorString($ex);
+    }
+    else
+    {
+        // not exactly sure
+    }
+
+}
+
+function getErrorString(\Error $er)
+{
+    // implement for php7
 }
 
 function getExceptionString(\Exception $ex)

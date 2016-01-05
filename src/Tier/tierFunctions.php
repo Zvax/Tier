@@ -251,14 +251,55 @@ function tierExceptionHandler($ex)
     }
     else
     {
-        // not exactly sure
+        // should not happen
     }
 
 }
 
 function getErrorString(\Error $er)
 {
-    // implement for php7
+    $string = '';
+
+    while ($er) {
+        $number = 0;
+        $string .= "Exception " . get_class($er) . ": '" . $er->getMessage()."'\n\n";
+
+        foreach ($er->getTrace() as $tracePart) {
+            $line = false;
+            if (isset($tracePart['file']) && isset($tracePart['line'])) {
+                $line .= $tracePart['file']." ";
+                $line .= $tracePart['line']." ";
+            }
+            else if (isset($tracePart['file'])) {
+                $line .= $tracePart['file']." ";
+            }
+            else if (isset($tracePart['line'])) {
+                $line .= $tracePart['line']." ";
+            }
+            else {
+                $line .= "*** "; // Some form of internal function or CUF
+            }
+
+            if (isset($tracePart["class"])) {
+                $line .= $tracePart["class"];
+            }
+            if (isset($tracePart["type"])) {
+                $line .= $tracePart["type"];
+            }
+            if (isset($tracePart["function"])) {
+                $line .= $tracePart["function"];
+            }
+
+            $string .= sprintf("#%s %s\n", $number, $line);
+            $number++;
+        }
+        $ex = $er->getPrevious();
+        if ($ex) {
+            $string .=  "\nPrevious ";
+        }
+    };
+
+    return $string;
 }
 
 function getExceptionString(\Exception $ex)
